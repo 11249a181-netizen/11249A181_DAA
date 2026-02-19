@@ -1,67 +1,62 @@
 #include <stdio.h>
 
-#define MAX 10
+int matrix[25][25], visited[25];
+int n, totalCost = 0;
 
-int matrix[MAX][MAX];
-int visited[MAX];
-int n;
-int cost = 0;
-
-void tsp(int start)
-{
-    int i, next_city;
-   
-    printf("%d ", start + 1);
-    visited[start] = 1;
-
-    next_city = -1;
+int findNearest(int city) {
+    int i;
     int min = 999;
+    int nearest = -1;
 
-    for(i = 0; i < n; i++)
-    {
-        if(matrix[start][i] != 0 && visited[i] == 0)
-        {
-            if(matrix[start][i] < min)
-            {
-                min = matrix[start][i];
-                next_city = i;
+    for(i = 0; i < n; i++) {
+        if(matrix[city][i] != 0 && visited[i] == 0) {
+            if(matrix[city][i] < min) {
+                min = matrix[city][i];
+                nearest = i;
             }
         }
     }
 
-    if(next_city != -1)
-    {
-        cost += min;
-        tsp(next_city);
+    if(nearest != -1) {
+        totalCost += min;
     }
-    else
-    {
-        cost += matrix[start][0];  // return to starting city
-        printf("1");
-    }
+
+    return nearest;
 }
 
-int main()
-{
+void tsp(int city) {
+    visited[city] = 1;
+    printf("%d ", city + 1);
+
+    int next = findNearest(city);
+
+    if(next == -1) {
+        printf("%d ", 1);  // Return to starting city
+        totalCost += matrix[city][0];
+        return;
+    }
+
+    tsp(next);
+}
+
+int main() {
     int i, j;
 
-    printf("Enter number of cities: ");
+    printf("Enter Total Number of Cities: ");
     scanf("%d", &n);
 
-    printf("Enter cost matrix:\n");
-    for(i = 0; i < n; i++)
-    {
-        for(j = 0; j < n; j++)
-        {
+    printf("Enter Cost Matrix:\n");
+    for(i = 0; i < n; i++) {
+        for(j = 0; j < n; j++) {
             scanf("%d", &matrix[i][j]);
         }
         visited[i] = 0;
     }
 
-    printf("Path: ");
+    printf("\nPath: ");
     tsp(0);
 
-    printf("\nMinimum Cost: %d\n", cost);
+    printf("\nMinimum Cost: %d\n", totalCost);
 
     return 0;
 }
