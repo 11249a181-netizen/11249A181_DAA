@@ -1,63 +1,71 @@
 #include <stdio.h>
 
-int matrix[25][25], visited[25];
-int n, totalCost = 0;
+int matrix[25][25], visited_cities[10], limit, cost = 0;
 
-int findNearest(int city) {
-    int i;
-    int min = 999;
-    int nearest = -1;
+int tsp(int c)
+{
+    int count;
+    int nearest_city = 999;
+    int minimum = 999;
 
-    for(i = 0; i < n; i++) {
-        if(matrix[city][i] != 0 && visited[i] == 0) {
-            if(matrix[city][i] < min) {
-                min = matrix[city][i];
-                nearest = i;
+    for(count = 0; count < limit; count++)
+    {
+        if(matrix[c][count] != 0 && visited_cities[count] == 0)
+        {
+            if(matrix[c][count] < minimum)
+            {
+                minimum = matrix[c][count];
+                nearest_city = count;
             }
         }
     }
 
-    if(nearest != -1) {
-        totalCost += min;
-    }
+    if(nearest_city != 999)
+        cost = cost + minimum;
 
-    return nearest;
+    return nearest_city;
 }
 
-void tsp(int city) {
-    visited[city] = 1;
+void minimum_cost(int city)
+{
+    int nearest_city;
+
+    visited_cities[city] = 1;
     printf("%d ", city + 1);
 
-    int next = findNearest(city);
+    nearest_city = tsp(city);
 
-    if(next == -1) {
-        printf("%d ", 1);  // Return to starting city
-        totalCost += matrix[city][0];
+    if(nearest_city == 999)
+    {
+        nearest_city = 0;
+        printf("%d", nearest_city + 1);
+        cost = cost + matrix[city][nearest_city];
         return;
     }
 
-    tsp(next);
+    minimum_cost(nearest_city);
 }
 
-int main() {
+int main()
+{
     int i, j;
 
     printf("Enter Total Number of Cities: ");
-    scanf("%d", &n);
+    scanf("%d", &limit);
 
-    printf("Enter Cost Matrix:\n");
-    for(i = 0; i < n; i++) {
-        for(j = 0; j < n; j++) {
+    printf("\nEnter Cost Matrix:\n");
+    for(i = 0; i < limit; i++)
+    {
+        for(j = 0; j < limit; j++)
+        {
             scanf("%d", &matrix[i][j]);
         }
-        visited[i] = 0;
+        visited_cities[i] = 0;
     }
 
     printf("\nPath: ");
-    tsp(0);
+    minimum_cost(0);
 
-    printf("\nMinimum Cost: %d\n", totalCost);
-
+    printf("\nMinimum Cost: %d\n", cost);
     return 0;
 }
-
